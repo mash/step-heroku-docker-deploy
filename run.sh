@@ -49,14 +49,16 @@ main() {
         use_new_git_repository "$WERCKER_HEROKU_DEPLOY_SOURCE_DIR";
     fi
 
+    install_docker;
+    
+    # always need heroku command
+    install_toolbelt;
+
     # Try to push the code
     set +e;
     push_code "$WERCKER_HEROKU_DEPLOY_APP_NAME";
     exit_code_push=$?
     set -e;
-
-    # always need heroku command
-    install_toolbelt;
 
     # Retry pushing the code, if the first push failed and retry was not disabled
     if [ $exit_code_push -ne 0 ]; then
@@ -183,6 +185,12 @@ init_gitssh() {
     echo "ssh -e none -i \"$ssh_key_path\" \$@" > "$gitssh_path";
     chmod 0700 "$gitssh_path";
     export GIT_SSH="$gitssh_path";
+}
+
+install_docker() {
+    info 'installing docker';
+    wget -qO- https://get.docker.com/ | sh
+    info "$(docker -v)";
 }
 
 install_toolbelt() {
