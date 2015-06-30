@@ -197,6 +197,9 @@ install_toolbelt() {
         sudo cp -r "$WERCKER_STEP_ROOT/vendor/heroku" /usr/local/heroku
         export PATH="/usr/local/heroku/bin:$PATH"
 
+        # install https://github.com/heroku/heroku-docker
+        heroku plugins:install heroku-docker
+
         info 'finished heroku toolbelt installation';
     else
         info 'heroku toolbelt is available, and will not be installed by this step';
@@ -242,11 +245,11 @@ use_random_ssh_key() {
 push_code() {
     local app_name="$1";
 
-    debug "starting heroku deployment with git push";
-    git push -f "git@heroku.com:$app_name.git" HEAD:master;
+    debug "starting heroku deployment with heroku docker:release";
+    heroku docker:release --app "$app_name"
     local exit_code_push=$?;
 
-    debug "git pushed exited with $exit_code_push";
+    debug "heroku docker:release exited with $exit_code_push";
     return $exit_code_push;
 }
 
