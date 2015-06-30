@@ -55,6 +55,9 @@ main() {
     exit_code_push=$?
     set -e;
 
+    # always need heroku command
+    install_toolbelt;
+
     # Retry pushing the code, if the first push failed and retry was not disabled
     if [ $exit_code_push -ne 0 ]; then
         if [ "$WERCKER_HEROKU_DEPLOY_RETRY" == "false" ]; then
@@ -68,10 +71,6 @@ main() {
             exit_code_push=$?
             set -e;
         fi
-    fi
-
-    if [ "$WERCKER_HEROKU_DEPLOY_INSTALL_TOOLBELT" == "true" -o -n "$WERCKER_HEROKU_DEPLOY_RUN" ]; then
-        install_toolbelt;
     fi
 
     # Run a command, if the push succeeded and the user supplied a run command
